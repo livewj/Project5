@@ -2,8 +2,10 @@
 #include "statisticssampler.h"
 #include "lennardjones.h"
 #include <iostream>
-
-using std::ofstream; using std::cout; using std::endl;
+#include <cstdlib>
+#include <iomanip>
+using namespace std;
+//using std::ofstream; using std::cout; using std::endl;
 
 StatisticsSampler::StatisticsSampler()
 {
@@ -21,9 +23,15 @@ void StatisticsSampler::saveToFile(System &system)
             cout << "Error, could not open statistics.txt" << endl;
             exit(1);
         }
+
     }
 
     // Print out values here
+    m_file << endl;
+    for(Atom &atom : m_atoms) //WHAT
+    {
+        m_file << setprecision(15) << atom.position.x() << endl;
+    }
 }
 
 void StatisticsSampler::sample(System &system)

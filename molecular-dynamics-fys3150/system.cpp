@@ -20,21 +20,6 @@ System::~System()
 
 void System::applyPeriodicBoundaryConditions() {
     for(Atom *atom : m_atoms) {
-        if(atom->position.x() > m_systemSize.x()){
-            atom->position.setX(atom->position.x() - m_systemSize.x());
-            atom->initialPosition.setX(atom->initialPosition.x() - m_systemSize.x());
-            atom->positionOnNeighborlistBuild.setX(atom->positionOnNeighborlistBuild.x() - m_systemSize.x());
-        }
-        if(atom->position.y() > m_systemSize.y()){
-            atom->position.setY(atom->position.y() - m_systemSize.y());
-            atom->initialPosition.setY(atom->initialPosition.y() - m_systemSize.y());
-            atom->positionOnNeighborlistBuild.setY(atom->positionOnNeighborlistBuild.y() - m_systemSize.y());
-        }
-        if(atom->position.z() > m_systemSize.z()){
-            atom->position.setZ(atom->position.z() - m_systemSize.z());
-            atom->initialPosition.setZ(atom->initialPosition.z() - m_systemSize.z());
-            atom->positionOnNeighborlistBuild.setZ(atom->positionOnNeighborlistBuild.z() - m_systemSize.z());
-        }
         if(atom->position.x() < 0){
             atom->position.setX(atom->position.x() + m_systemSize.x());
             atom->initialPosition.setX(atom->initialPosition.x() + m_systemSize.x());
@@ -49,6 +34,21 @@ void System::applyPeriodicBoundaryConditions() {
             atom->position.setZ(atom->position.z() + m_systemSize.z());
             atom->initialPosition.setZ(atom->initialPosition.z() + m_systemSize.z());
             atom->positionOnNeighborlistBuild.setZ(atom->positionOnNeighborlistBuild.z() + m_systemSize.z());
+        }
+        if(atom->position.x() > m_systemSize.x()){
+            atom->position.setX(atom->position.x() - m_systemSize.x());
+            atom->initialPosition.setX(atom->initialPosition.x() - m_systemSize.x());
+            atom->positionOnNeighborlistBuild.setX(atom->positionOnNeighborlistBuild.x() - m_systemSize.x());
+        }
+        if(atom->position.y() > m_systemSize.y()){
+            atom->position.setY(atom->position.y() - m_systemSize.y());
+            atom->initialPosition.setY(atom->initialPosition.y() - m_systemSize.y());
+            atom->positionOnNeighborlistBuild.setY(atom->positionOnNeighborlistBuild.y() - m_systemSize.y());
+        }
+        if(atom->position.z() > m_systemSize.z()){
+            atom->position.setZ(atom->position.z() - m_systemSize.z());
+            atom->initialPosition.setZ(atom->initialPosition.z() - m_systemSize.z());
+            atom->positionOnNeighborlistBuild.setZ(atom->positionOnNeighborlistBuild.z() - m_systemSize.z());
         }
     }
 }

@@ -3,6 +3,8 @@
 #include "atom.h"
 #include "unitconverter.h"
 #include <cstdlib>
+#include <iostream>
+#include <iomanip>
 using std::endl; using std::cout;
 
 
