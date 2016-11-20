@@ -94,17 +94,87 @@ HVA SKAL VI SE PÅ?
 
 
 \section{Teori}
-Atomene i systemet vårt vekselvirker med hverandre gjennom den negative av potensialets gradient:
+Gitteret vårt består at \textit{enhetsceller}, en gruppe med atomer. Større systemer vil altså bestå av flere enhetsceller etter hverandre. Argon har en kubisk flatesentrert gitterstruktur, også kalt FCC. Én slik FCC celle har størrelsen $b$ Ångstrøm, hvor $b$ er gitterkonstanten. Hver celle består av fire atomer med koordinatene
+\begin{equation}
+\textbf{r}_1 = 0 \hat{i} + 0 \hat{j} + 0 \hat{k}
+\end{equation}
+\begin{equation}
+\textbf{r}_2 = \frac{b}{2} \hat{i} + \frac{b}{2} \hat{j} + 0 \hat{k}
+\end{equation}
+\begin{equation}
+\textbf{r}_3 = 0 \hat{i} + \frac{b}{2} \hat{j} + \frac{b}{2} \hat{k}
+\end{equation}
+\begin{equation}
+\textbf{r}_4 = \frac{b}{2} \hat{i} + 0 \hat{j} + \frac{b}{2} \hat{k}
+\end{equation}
+
+Vi kan nå lage $N_x \times N_y \times N_z$ slike enhetsceller ved siden av hverandre for å danne et større system, hvor origo til enhetscelle ($i,j,k$) er 
+\begin{equation}
+\mathbf{R}_{i,j,k} = i \hat{\mathbf{u}}_1 + j \hat{\mathbf{u}}_2 + k \hat{\mathbf{u}}_3,
+\end{equation}
+
+hvor $i=0,1,..., N_x-1, j=0,1,..., N_y-1$, og $k=0,1,..., N_z-1$. Enhetsvektorene til enhetscellene skaleres med gitterkonstanten $b$ slik at
+\begin{align}
+	\hat{\mathbf{u}}_1 = b\hat{\mathbf{i}}, \quad \hat{\mathbf{u}}_2 = b\hat{\mathbf{j}}, \quad \hat{\mathbf{u}}_3 = b\hat{\mathbf{k}}.
+\end{align}
+
+Videre kommer vi til å bruke Lennard-Jones potensialet til å beregne energien mellom to atomer $i$ og $j$
+
+\begin{equation}
+U(r_{ij}) = 4\epsilon\left[\left(\frac{\sigma}{r_{ij}}\right)^{12} - \left(\frac{\sigma}{r_{ij}}\right)^6\right],
+\end{equation}
+
+hvor $r_{ij} = \vert\mathbf{r}_i - \mathbf{r}_j\vert$  er avstanden mellom atom $i$ og atom $j$, $\epsilon$ er dybden på potensialbrønnen (med enhet energi) og $\sigma$ er avstanden når potensialet er null. Siden vi jobber med argon, bruker vi 
+
+\begin{equation}
+	\frac{\epsilon}{k_B} = 119.8\mathrm{K}, \quad \sigma=3.405 \mathrm{Angstrom}.
+\end{equation}
+
+I dette prosjektet brukes såkalte MD enheter. Definisjonen av disse finnes i Appendix A. Potensialet gitt ovenfor gir oss termodynamiske størrelser som stemmer godt med argons eksperimentelle dataer ved ekvilibrium. Systemets tilstandsligning er gitt ved van der Waals ligning. Systemets totale potensielle energi $V$ finner vi ved å summe over alle atompar, hvor vi teller hvert par kun én gang
+\begin{equation}
+V = \sum_{i>j} U(r_{ij})
+\end{equation}
+
+Kraftens  finner vi ved
 \begin{equation}
 \textbf{F}(r_{ij}) = - \nabla U(r_{ij}).
 \end{equation}
-Med denne kraften kan vi integrere Newtons lover. 
 
-Gitteret vårt består at \textit{enhetsceller}, en gruppe med atomer. 
+x-komponenten av kraften blir da
+\begin{equation}
+F_x (r_{ij}) = -\frac{\partial U}{\partial r_{ij}} \frac{\partial r_{ij}}{\partial x_{ij}}.
+\end{equation}
+y -og z-komponenten finner vi på samme måte. Systemets kinetiske energi er 
 
+\begin{equation}
+E_k = \sum_{i=1}^{N_{atomer}} \frac{1}{2}m_iv_i^2
+\end{equation}
+hvor $m_i$ og $v_i$ er massen og hastigheten til atom nummer $i$. Vi kan også kalkulere et estimat for temperaturen ved hjelp av ekvipartisjonsteoremet 
+
+\begin{equation}
+\langle E_k \rangle = \frac{3}{2}N_{atomer} k_B T
+\end{equation}
+som kan brukes til å definere den \textit{momentane} temperaturen
+
+\begin{equation}
+T = \frac{2}{3}\frac{E_k}{N_{atomer} k_B}
+\end{equation}
+
+Til slutt kan vi finne diffusjonskonstanten ved å bruke Einstein relasjonen som sier at
+
+\begin{equation}
+\langle r^2(t) \rangle = 6 D t
+\end{equation}
+
+hvor $D$ er diffusjonskonstanten, $t$ er tiden og
+
+\begin{equation}
+r_i^2 (t) = | \textbf{r}_i (t) - \textbf{r}_i (0) |^2
+\end{equation} 
+hvor $\textbf{r}_i (t)$ er posisjonen til atom $i$ ved tiden $t$.
 
 \subsection{Kodens struktur}
-Koden som er brukt i dette prosjektet er objekt orientert, og bygger på koden skrevet av Anders Hafreager [6]. Figur \ref{flow} viser kodens flytskjema. Koden består av en rekke nøstede funksjoner som avhenger av hverandre. Aller først starter vi med å initialisere systemet vårt, ved å bestemme antall celler i gitteret, den initielle temperaturen og gitterkonstanten, som bestemmer systemets tetthet. Deretter konverteres enhetene i klassen \texttt{unitconverter.cpp}, slik at ulike fysiske størrelser som masse, lengde og energi har en enhet som er tilpasset systemet vi jobber med. Deretter setter vi opp selve gitteret ved å plassere partiklene i en tredimensjonal kubisk flatesentrert gitterstruktur (også kalt FCC), akkurat som i argons krystallstruktur. Det betyr at vi har ett atom i hvert hjørne, og ett atom på hver flate. Hvert atom får en tilfeldig initialhastiget bestemt av Boltzmanns fordelingslov som funksjon av initialtemperaturen, slik at 
+Koden som er brukt i dette prosjektet er objekt orientert, og bygger på koden skrevet av Anders Hafreager [6]. Figur \ref{flow} viser kodens flytskjema. Koden består av en rekke nøstede funksjoner som avhenger av hverandre. Aller først starter vi med å initialisere systemet vårt, ved å bestemme antall celler i gitteret, den initielle temperaturen og gitterkonstanten, som bestemmer systemets tetthet. Deretter konverteres enhetene i klassen \texttt{unitconverter.cpp}, slik at ulike fysiske størrelser som masse, lengde og energi har en enhet som er tilpasset systemet vi jobber med. Deretter setter vi opp selve gitteret ved å plassere partiklene i en tredimensjonal kubisk flatesentrert gitterstruktur, akkurat som i argons krystallstruktur. Det betyr at vi har ett atom i hvert hjørne, og ett atom på hver flate. Hvert atom får en tilfeldig initialhastiget bestemt av Boltzmanns fordelingslov som funksjon av initialtemperaturen, slik at 
 
 \begin{equation}
 P(v_i)dv_i = \left(\frac{m}{2\pi k_B T} \right)^{1/2} exp \left(- \frac{mv_i^2}{2k_B T} \right)dv_i
@@ -142,10 +212,34 @@ Vi starter med funksjonen \texttt{step} som finnes i klassen \texttt{system.cpp}
 \end{align}
 
 
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 
+\section{Appendix A}
+I programmet vårt brukes det MD enheter, hvor de fire følgende enhetene er definert ved
 
+\begin{align}
+	\text{1 masseenhet } &= 1 \text{ atommasse } = 1.661\times 10^{-27}\mathrm{kg},\\
+	\text{1 lengdeenhet } &= 1.0 \mathrm{angstrom} = 1.0\times 10^{-10}\mathrm{m},\\
+	\text{1 energienhet } &= 1.651\times 10^{-21}\mathrm{J},\\
+	\text{1 temperaturenhet} &= 119.735\mathrm{K}.
+\end{align}
 
+og vi får at Boltzmanns konstant $k_B$ = 1. Ut ifra dette kan vi utlede størrelsen på andre enheter, som for eksempel tid. Ved å bruke $E = mc^2$ får vi at
+\begin{align}
+\text{Energi} = \text{masse} \times \frac{\text{lengde}^2}{\text{tid}^2}
+\end{align}
 
+som gir oss 
+\begin{align}
+\text{Tid} = \text{lengde} \times \sqrt{\frac{\text{masse}}{\text{energi}}}
+\end{align}
+
+Setter vi inn de oppgitte verdiene for lengde, masse og energi, får vi at
+\begin{align}
+\text{1 tidsenhet } = 1.0 \times 10^{-10}\sqrt{\frac{1.661\times 10^{-27}}{1.651\times 10^{-21}}} \text{ s} = 1.00224\times 10^{-13}\mathrm{s}.
+\end{align}
+
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 %----------------------------------------------------------------------------------------
 
 \bibliography{Referanser}
@@ -169,14 +263,12 @@ Vi starter med funksjonen \texttt{step} som finnes i klassen \texttt{system.cpp}
  \bibitem{}
  Opprinnelig kode, A. Hafreager: <https://github.com/andeplane/molecular-dynamics-fys3150>, 19.11.16
   
-  \bibitem{}
-  Utgangspunktet for kodene \texttt{IsingModel.cpp} og \texttt{ParaIsingModel.cpp} er hentet fra kursets Github-side:
-  <https://github.com/CompPhysics/ComputationalPhysics/tree/master/\\
-  doc/Programs/ParallelizationMPI>, 14.11.16
-  
 \bibitem{}
-  Deler av koden i \texttt{ParaIsingModel.cpp}, samt koden brukt til å estimere $T_C$, er hentet fra \\ <https://github.com/henrisro/Project4>,
-  14.11.16
+  Deler av koden i \texttt{system.cpp} er hentet fra: <https://github.com/GioPede/FYS3150/tree/master/Project5>,
+  20.11.16
+  
+ \bibitem{}
+ Periodic boundary conditions: <https://en.wikipedia.org/wiki/Periodic$\_$boundary$\_$conditions>, 20.11.16
 
    
 \end{thebibliography}
