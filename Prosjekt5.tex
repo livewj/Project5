@@ -1,0 +1,184 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
+\usepackage[utf8]{inputenc} %æ,ø,å
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+
+\usepackage[tocflat]{tocstyle}
+\addto\captionsenglish{% Replace "english" with the language you use
+  \renewcommand{\contentsname}%
+    {Innholdsfortegnelse}%
+}
+
+\usepackage{sectsty} % Allows customizing section commands
+\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
+
+\usepackage{fancyhdr} % Custom headers and footers
+\usepackage{placeins} %Floatbarrier
+
+\usepackage{graphicx} %package to manage images
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+\normalfont \normalsize 
+\textsc{Universitetet i Oslo, Fysisk Institutt \\
+										FYS3150, Prosjekt 5} \\ [25pt] % Your university, school and/or department name(s)
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Molekylærdynamikk \\ % The assignment title
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{Live Wang Jensen} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+
+\maketitle 
+\begin{abstract}
+Målet med dette prosjektet er å implementere en algoritme som simulerer molekylærdynamikk slik at vi kan studere de ulike termodynamiske egenskapene til grunnstoffet argon. Argon er en edelgass og vil derfor ikke danne kovalente bindinger mellom atomene, slik at simuleringen blir enklere å gjennomføre. Systemet vårt er ordnet i et gitter bestående av kubisk flatesentrerte gitterstrukturer, da dette er den geometriske strukturen argon har som fast stoff. Vi har sett på systemer med $10^2$ til $10^6$ atomer, og simulert systemets tidsutvikling ved ulike temperaturer og tettheter. I tillegg har vi sett på ulike termodynamiske størrelser som energi og bevegelsesmengde. Til slutt bli Berendsen termodstaten innført.
+KVANTITATIVT
+
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introduksjon}
+Molekylærdynamikk, eller MD, er en numerisk metode som brukes for å kunne beregne ulike fysiske størrelser. Dette gjøres gjerne gjennom datasimulasjon av bevegelsen til atomer. Det finnes flere ulike MD algoritmer, den enkleste av dem bruker Newtonsk fysikk og ser på atomene som punktpartikler. MD er en svært nyttig metode som brukes innen nesten alle vitenskapelige fagfelt, fra biokjemi og materialteknologi til nanoteknologi og biofysikk. Slike simuleringer brukes blant annet til å studere oppførselen til systemer som ikke kan observeres direkte gjennom eksperimenter, som for eksempel vekst av tynnfilmer. Innenfor biofysikken bruker man ofte MD til å raffinere tredimensjonale proteinstrukturer og andre makromolekyler ut ifra eksperimentelle data hentet fra NMR spektroskopi. MD kan også brukes til å undersøke fysiske egenskaper i nanoteknologiske apparater som ennå ikke har blitt produsert. 
+\\
+HVA SKAL VI SE PÅ?
+
+
+
+
+\section{Teori}
+Atomene i systemet vårt vekselvirker med hverandre gjennom den negative av potensialets gradient:
+\begin{equation}
+\textbf{F}(r_{ij}) = - \nabla U(r_{ij}).
+\end{equation}
+Med denne kraften kan vi integrere Newtons lover. 
+
+Gitteret vårt består at \textit{enhetsceller}, en gruppe med atomer. 
+
+
+\subsection{Kodens struktur}
+Koden som er brukt i dette prosjektet er objekt orientert, og bygger på koden skrevet av Anders Hafreager [6]. Figur \ref{flow} viser kodens flytskjema. Koden består av en rekke nøstede funksjoner som avhenger av hverandre. Aller først starter vi med å initialisere systemet vårt, ved å bestemme antall celler i gitteret, den initielle temperaturen og gitterkonstanten, som bestemmer systemets tetthet. Deretter konverteres enhetene i klassen \texttt{unitconverter.cpp}, slik at ulike fysiske størrelser som masse, lengde og energi har en enhet som er tilpasset systemet vi jobber med. Deretter setter vi opp selve gitteret ved å plassere partiklene i en tredimensjonal kubisk flatesentrert gitterstruktur (også kalt FCC), akkurat som i argons krystallstruktur. Det betyr at vi har ett atom i hvert hjørne, og ett atom på hver flate. Hvert atom får en tilfeldig initialhastiget bestemt av Boltzmanns fordelingslov som funksjon av initialtemperaturen, slik at 
+
+\begin{equation}
+P(v_i)dv_i = \left(\frac{m}{2\pi k_B T} \right)^{1/2} exp \left(- \frac{mv_i^2}{2k_B T} \right)dv_i
+\end{equation}
+
+hvor $m$ er atomets masse, $k_B$ er Boltzmanns konstant og $T$ er temperaturen. Dette er en normalfordeling med null i gjennomsnitt og standardavvik $\sigma = \sqrt{k_B T/m}$. I tillegg fjerner vi den totale initielle bevegelsesmengden ved å trekke fra den gjennomsnittlige initielle bevegelsesmengden per atom fra hvert av atomene. Videre bestemmes hvilken integrator som skal brukes; i vårt tilfelle er det \texttt{velocityverlet.cpp}. Vi er nå klare til å starte selve simuleringen. \\
+
+Vi starter med funksjonen \texttt{step} som finnes i klassen \texttt{system.cpp}. Denne funksjonen starer ned å kalle på den integratoren vi har valgt. Inne i integratoren kalles det på funskjonen \texttt{calculateForces()} som finnes i \texttt{system.cpp}. Vi bruker \texttt{LennardJones} potensialet, som regner ut den potensielle kraften som funksjon av avstanden melom atom $i$ og $j$, $r_{ij}$. Integratoren beregner atomenes nye hastighet og posisjon, basert på forrige tidssteg. For å kunne beregne kreftene er det brukt periodiske grensebetingelser. Etter dette går vi til neste tidssteg, og vi gjentar \texttt{step} funksjonen ved å loope gjennom tidsstegene. Etter hver loop registreres ulike termodynamiske størrelser som temperatur, kinetisk og potensiell energi. Posisjonen til partiklene lagres i en fil og visualiseres i Ovito. 
+
+
+
+\FloatBarrier
+\begin{figure}[!ht]
+ \centering
+ \includegraphics[scale=0.4]{flowchart.pdf}
+ \caption{Flytskjema som beskriver kodens struktur.}
+ \label{flow}
+ \end{figure}
+ \FloatBarrier
+
+
+\section{Resultater}
+
+\section{Diskusjon}
+\section{Konklusjon}
+
+
+\begin{align} 
+\begin{split}
+(x+y)^3 	&= (x+y)^2(x+y)\\
+&=(x^2+2xy+y^2)(x+y)\\
+&=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
+&=x^3+3x^2y+3xy^2+y^3
+\end{split}					
+\end{align}
+
+
+
+
+
+
+%----------------------------------------------------------------------------------------
+
+\bibliography{Referanser}
+\begin{thebibliography}{9}  
+    
+\bibitem{}
+   M. Hjort-Jensen: Computational physics, lecture notes 2015. Fysisk institutt, UiO, 2016.
+
+\bibitem{}
+   Oppgavetekst: Project 5, Fysisk institutt, UiO, 19.11.16
+   
+\bibitem{}
+ Gitterstrukturer: <http://frey.no/wp-content/uploads/2014/01/3-Gitterstrukturer.pdf>, 19.11.16  
+ 
+ \bibitem{}
+  Molekylærdynamikk: <https://no.wikipedia.org/wiki/Molekyl$æ$rdynamikk>, 19.11.16
+  
+\bibitem{}
+ XYZ file formal: <https://en.wikipedia.org/wiki/XYZ$\_$file$\_$format>, 19.11.16
+ 
+ \bibitem{}
+ Opprinnelig kode, A. Hafreager: <https://github.com/andeplane/molecular-dynamics-fys3150>, 19.11.16
+  
+  \bibitem{}
+  Utgangspunktet for kodene \texttt{IsingModel.cpp} og \texttt{ParaIsingModel.cpp} er hentet fra kursets Github-side:
+  <https://github.com/CompPhysics/ComputationalPhysics/tree/master/\\
+  doc/Programs/ParallelizationMPI>, 14.11.16
+  
+\bibitem{}
+  Deler av koden i \texttt{ParaIsingModel.cpp}, samt koden brukt til å estimere $T_C$, er hentet fra \\ <https://github.com/henrisro/Project4>,
+  14.11.16
+
+   
+\end{thebibliography}
+
+\end{document}
