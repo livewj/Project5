@@ -61,7 +61,7 @@ void LennardJones::calculateForces(System &system)
             else if (deltaz2z1 > 0.5*L) deltaz2z1 -= L;
 
             double dr2 = deltax2x1*deltax2x1 + deltay2y1*deltay2y1 + deltaz2z1*deltaz2z1; // r^2 = x^2 + y^2 + z^2
-            if (dr2 > rCut*rCut) continue;  //compute forces
+            //if (dr2 > rCut*rCut) continue;  //compute forces
 
             double dr = sqrt(dr2);
             double dr6 = dr2*dr2*dr2;
@@ -82,29 +82,4 @@ void LennardJones::calculateForces(System &system)
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

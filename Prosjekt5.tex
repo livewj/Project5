@@ -19,9 +19,7 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
-
-\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
-\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc} %æ,ø,å
 \usepackage[english]{babel} % English language/hyphenation
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
@@ -144,7 +142,24 @@ x-komponenten av kraften blir da
 \begin{equation}
 F_x (r_{ij}) = -\frac{\partial U}{\partial r_{ij}} \frac{\partial r_{ij}}{\partial x_{ij}}.
 \end{equation}
-y -og z-komponenten finner vi på samme måte. Systemets kinetiske energi er 
+y -og z-komponenten finner vi på samme måte. Ved å bruke at $r = \sqrt{x^2 + y^2 + z^2}$, kan vi  derivere dette uttrykket analytisk, slik at 
+
+\begin{equation}
+\frac{\partial U}{\partial r_{ij}} = 4 \epsilon \left[ -12 \left( \frac{\sigma^{12}}{r_{ij}^{13}} \right) + 6 \left( \frac{\sigma^6}{r_{ij}^7} \right) \right]
+\end{equation}
+
+og 
+\begin{equation}
+\frac{\partial r_{ij}}{\partial x_{ij}} = \frac{x_{ij}}{r_{ij}},
+\end{equation}
+slik at 
+
+\begin{equation}
+F_x (r_{ij}) = - 4 \epsilon \left[ -12 \left( \frac{\sigma^{12}}{r_{ij}^{13}} \right) + 6 \left( \frac{\sigma^6}{r_{ij}^7} \right) \right] \cdot \frac{x_{ij}}{r_{ij}}.
+\end{equation}
+
+
+Tilsvarende kan gjøres for $F_y(r_{ij})$ og $F_z(r_{ij})$. Systemets kinetiske energi er 
 
 \begin{equation}
 E_k = \sum_{i=1}^{N_{atomer}} \frac{1}{2}m_iv_i^2

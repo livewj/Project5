@@ -14,7 +14,7 @@ using namespace std;
 int main(int numberOfArguments, char **argumentList)
 {
     int numberOfUnitCells = 5; //number of unit cells in each dimension
-    double initialTemperature = UnitConverter::temperatureFromSI(3000.0); // measured in Kelvin
+    double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
     // If a first argument is provided, it is the number of unit cells
@@ -40,22 +40,21 @@ int main(int numberOfArguments, char **argumentList)
     system.removeTotalMomentum();
 
     StatisticsSampler statisticsSampler;
+
     IO movie("movie.xyz"); // To write the state to file
-
-
 
     cout << setw(20) << "Timestep" <<
             setw(20) << "Time" <<
             setw(20) << "Temperature" <<
             setw(20) << "KineticEnergy" <<
             setw(20) << "PotentialEnergy" <<
-            setw(20) << "TotalEnergy" << endl;
+            setw(20) << "TotalEnergy" <<
+            setw(20) << "DiffusionConstant" << endl;
 
-    statisticsSampler.saveToFile(system);
 
     for(int timestep=0; timestep<1000; timestep++) {
         system.step(dt);
-        statisticsSampler.sample(system);
+        statisticsSampler.sample(system);  //sample to file
         if( timestep % 100 == 0 ) {
             // Print the timestep every 100 timesteps
             cout << setw(20) << system.steps() <<
@@ -63,7 +62,8 @@ int main(int numberOfArguments, char **argumentList)
                     setw(20) << statisticsSampler.temperature() <<
                     setw(20) << statisticsSampler.kineticEnergy() <<
                     setw(20) << statisticsSampler.potentialEnergy() <<
-                    setw(20) << statisticsSampler.totalEnergy() << endl;
+                    setw(20) << statisticsSampler.totalEnergy() <<
+                    setw(20) << statisticsSampler.diffusionconstant() << endl;
         }
         movie.saveState(system);
     }
