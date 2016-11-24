@@ -13,9 +13,6 @@ public:
     vec3 velocity;
     vec3 force;
     vec3 initialPosition; //FFC
-    vec3 ListOfNeighborsVec;
-    vector<Atom*> neighbors;
-
 
     Atom(double mass);
     void resetForce();

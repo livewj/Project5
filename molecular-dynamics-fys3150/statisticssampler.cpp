@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <iomanip>
+#include "unitconverter.h"
 using namespace std;
 //using std::ofstream; using std::cout; using std::endl;
 
@@ -12,30 +13,26 @@ StatisticsSampler::StatisticsSampler()
 
 }
 
-void StatisticsSampler::saveToFile(System &system)
+void StatisticsSampler::saveToFile(System &system, string filename)
 {
     // Save the statistical properties for each timestep for plotting etc.
-    // First, open the file if it's not open already
+    // First, open the file if it's not open already    
     if(!m_file.good()) {
-        m_file.open("statistics.txt", ofstream::out);    //FILENAME
-        // If it's still not open, something bad happened...
+        m_file.open(filename.c_str(), ofstream::out);
         if(!m_file.good()) {
-            cout << "Error, could not open statistics.txt" << endl;
-            exit(1);
+            cout << "Error opening file " << filename << ". Aborting!" << endl;
+            terminate();
         }
-
     }
 
-    // Print out values here
-    if (m_file.is_open()) {
+    // Write to file for each timestep here
         m_file << setprecision(15) <<  system.steps() << "      "
-               << setprecision(15) <<  system.time() << "      "
-               << setprecision(15) << temperature() << "      "
+               << setprecision(15) << system.time() << "      "
+               << setprecision(15) << UnitConverter::temperatureToSI( temperature()) << "      "
                << setprecision(15) << kineticEnergy() << "      "
                << setprecision(15) << potentialEnergy() << "      "
                << setprecision(15) << totalEnergy() << "       "
-               << setprecision(15) << diffusionconstant()<< "hey \n";// << endl;
-    }
+               << setprecision(15) << UnitConverter::diffusionToSI( diffusionconstant() )<< endl;
 }
 
 void StatisticsSampler::sample(System &system)
@@ -47,7 +44,7 @@ void StatisticsSampler::sample(System &system)
     sampleDensity(system);
     sampleDiffusionConstant(system);
 
-    saveToFile(system);
+    saveToFile(system, "statistics.txt"); //FILENAME HERE
 }
 
 void StatisticsSampler::sampleKineticEnergy(System &system)

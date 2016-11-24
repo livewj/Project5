@@ -92,7 +92,7 @@ HVA SKAL VI SE PÅ?
 
 
 
-\section{Implementasjon}
+\section{Teori og implementasjon}
 
 \subsection{Gitterstruktur}
 Gitteret vårt består at \textit{enhetsceller}, en gruppe med atomer. Større systemer vil altså bestå av flere enhetsceller etter hverandre. Argon har en kubisk flatesentrert gitterstruktur, også kalt FCC, se figur \ref{fcc}. 
@@ -230,7 +230,7 @@ E_k = \sum_{i=1}^{N_{atomer}} \frac{1}{2}m_iv_i^2
 hvor $m_i$ og $v_i$ er massen og hastigheten til atom nummer $i$. Den potensielle energien er gitt i ligning (2.9), og vi finner den totale energien ved å addere den kinetiske og den potensielle energien. 
 
 \begin{equation}
-E_{tot} = \sum_{i=1}^N_{atomer} E_k + V
+E_{tot} =  E_k + V
 \end{equation}
 Vi vet at denne summen må være konstant, siden vi jobber med et mikrokanonisk system. I tillegg skal den totale bevegelsesmengden i systemet være null. Dette er derfor en god måte å teste om programmet virker som det skal.
 
@@ -255,9 +255,7 @@ hvor $D$ er diffusjonskonstanten, $t$ er tiden og
 \begin{equation}
 r_i^2 (t) = | \textbf{r}_i (t) - \textbf{r}_i (0) |^2
 \end{equation} 
-hvor $\textbf{r}_i (t)$ er posisjonen til atom $i$ ved tiden $t$. Ved å øke temperaturen, vil systemet bli mer og mer kaotisk. Ved en viss temperatur vil vi miste krystallstrukturen, vi kaller dette for systemets smeltepunkt. Diffusjonskonstanten $D$ gir oss en estimat på temperaturen ved smeltepunktet. Vi vet at $D$ vil være omtrent null når systemet er i fast form, mens den vil øke kraftig ved smeltepunktet. 
-
-\\
+hvor $\textbf{r}_i (t)$ er posisjonen til atom $i$ ved tiden $t$. Ved å øke temperaturen, vil systemet bli mer og mer kaotisk. Ved en viss temperatur vil vi miste krystallstrukturen, vi kaller dette for systemets smeltepunkt. Diffusjonskonstanten $D$ gir oss en estimat på temperaturen ved smeltepunktet. Vi vet at $D$ vil være omtrent null når systemet er i fast form, mens den vil øke kraftig ved smeltepunktet.\\
 
 
 
@@ -285,7 +283,7 @@ Vi starter med funksjonen \texttt{step} som finnes i klassen \texttt{system.cpp}
 
 
 \section{Resultater}
-Figur \ref{fcuk} og \ref{fcuk2} viser oss fordelignen av atomer før og etter vi implementerte gitterstrukturen FCC. Figurene viser fordelingen ved starten av simuleringen, før kreftene har begynt å virke. 
+Figur \ref{fcuk} og \ref{fcuk2} viser oss fordelignen av atomer før og etter vi implementerte gitterstrukturen FCC. Figurene er laget i Ovito, og viser fordelingen ved starten av simuleringen, før kreftene har begynt å virke. 
 
  \FloatBarrier
 \begin{figure}[!htb]
@@ -299,13 +297,44 @@ Figur \ref{fcuk} og \ref{fcuk2} viser oss fordelignen av atomer før og etter vi
 \endminipage\hfill
 \end{figure}
  \FloatBarrier
+ 
+Figur \ref{50}, \ref{250}, \ref{450} og \ref{700} viser hvordan systemet utviklet seg ved ulike initialtemperaturer på hvv 50, 250, 450 og 700 Kelvin. Her er det brukt 5$\times$5 $\times$ 5 enhetsceller, som tilsvarer 500 atomer. 
+ 
+ 
+ \FloatBarrier
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+  \includegraphics[width=\linewidth]{T=50}
+  \caption{Initialtemperatur 50 K}\label{50}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+  \includegraphics[width=\linewidth]{T=250}
+  \caption{Initialtemperatur 250 K}\label{250}
+\endminipage\hfill
+\end{figure}
+ \FloatBarrier
+ 
+ \FloatBarrier
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+  \includegraphics[width=\linewidth]{T=450}
+  \caption{Initialtemperatur 450 K}\label{450}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+  \includegraphics[width=\linewidth]{T=700}
+  \caption{Initialtemperatur 700 K}\label{700}
+\endminipage\hfill
+\end{figure}
+ \FloatBarrier
 
 
 \section{Diskusjon}
 tetthet på $\rho = m/V = 4m_{Ar}/b^3 = 1822,8 kg/m^3$. Dette er en ekstremt høy tetthet i flytende tilstand. Vi vet at den kritiske tettheten er på 536 $kg/m^3$ ????? FRA HVOR.
 
-\section{Konklusjon}
+I figurene \ref{50}, \ref{250}, \ref{450} og \ref{700} ser vi hvordan systemet utvikler seg ved ulike initialtemperaturer. Som forventet, ser vi at  systemet blir mer kaotisk ved høyere initialtemperaturer. Ved såpass høye temperaturer (eks 700 Kelvin) vil ikke atomene være bundet til sin faste plass i krystallstrukturen, og systemet vårt blir flytende. Vi ser at ved en initialtemperatur på 50 K har vi fortsatt beholdt krystallstrukturen. Allerede ved en initialtemperatur på 250 K begynner det å bli vanskelig å se krystallstrukturen tydelig. Det ville være vanskelig å bestemme ved hvilken temperatur systemet vårt går over til å bli væske bare ved å se på disse bildene. Vi bruker derfor diffusjonskonstanten $D$ til å få et bedre estimat av smeltepunktet til systemet. 
 
+\section{Konklusjon}
+I løpet av dette prosjektet har vi klart å implementere et program som bruker molekylærdynamikk til å simulere grunnstoffet Argon. Vi har sett på hvordan dette systemet oppfører seg ved ulike initialbetingelser. Ved å beregne ulike størrelser som potensiell energi, kinetisk energi, temperatur og diffusjonskonstant, kan vi se på hvordan disse vil utvikle seg som funksjon av tid. Vi har begrenset oss til gittere med størrelsen 5$\times$5$\times$5, da simulering med større gittere krevde for mye CPU tid.
 
 
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule

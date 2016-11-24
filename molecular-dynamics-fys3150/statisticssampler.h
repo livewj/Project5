@@ -15,7 +15,7 @@ private:
     double m_DiffusionConstant = 0;
 public:
     StatisticsSampler();
-    void saveToFile(System &system);
+    void saveToFile(System &system, std::__1::string filename);
     void sample(System &system);
     void sampleKineticEnergy(System &system);
     void samplePotentialEnergy(System &system);

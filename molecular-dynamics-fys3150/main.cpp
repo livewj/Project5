@@ -14,7 +14,7 @@ using namespace std;
 int main(int numberOfArguments, char **argumentList)
 {
     int numberOfUnitCells = 5; //number of unit cells in each dimension
-    double initialTemperature = UnitConverter::temperatureFromSI(400.0); // measured in Kelvin
+    double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // b, measured in Angstroms
 
     // If a first argument is provided, it is the number of unit cells
@@ -34,7 +34,7 @@ int main(int numberOfArguments, char **argumentList)
 
     System system;
     system.createFCCLattice(numberOfUnitCells, latticeConstant, initialTemperature);
-    system.potential().setEpsilon(119.8); //[K] Optimal for Argon
+    system.potential().setEpsilon(1.0);
     system.potential().setSigma(3.405); //Angstrom
 
     system.removeTotalMomentum();
@@ -52,6 +52,7 @@ int main(int numberOfArguments, char **argumentList)
             setw(20) << "DiffusionConstant" << endl;
 
 
+
     for(int timestep=0; timestep<1000; timestep++) {
         system.step(dt);
         statisticsSampler.sample(system);  //sample to file statistics.txt
@@ -59,7 +60,7 @@ int main(int numberOfArguments, char **argumentList)
             // Print the timestep every 100 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<
-                    setw(20) << statisticsSampler.temperature() <<
+                    setw(20) << UnitConverter::temperatureToSI(statisticsSampler.temperature()) <<
                     setw(20) << statisticsSampler.kineticEnergy() <<
                     setw(20) << statisticsSampler.potentialEnergy() <<
                     setw(20) << statisticsSampler.totalEnergy() <<

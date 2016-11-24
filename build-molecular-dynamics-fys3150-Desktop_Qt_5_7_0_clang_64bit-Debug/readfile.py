@@ -10,20 +10,16 @@ def read(filename):
 	PotentialEnergy = []
 	TotalEnergy = []
 	DiffusionConstant = []
-	relevant_lines = infile.readlines()[0:] #skips the irrelevant lines
-	for line in range(0,len(relevant_lines)): # relevant_lines:
-		if line % 2 == 0:
-			infile.readlines()[1:2]
-		else:
-			for line in relevant_lines:
-				data = line.split()
-		    	Timestep.append(float(data[0]))
-		    	Time.append(float(data[1]))
-		    	Temperature.append(float(data[2]))
-		    	KineticEnergy.append(float(data[3]))
-		    	PotentialEnergy.append(float(data[4]))
-		    	TotalEnergy.append(float(data[5]))
-		    	DiffusionConstant.append(float(data[6]))
+	relevant_lines = infile.readlines()[1:] #skips the irrelevant lines
+	for line in relevant_lines: 
+		data = line.split()
+		Timestep.append(float(data[0]))
+		Time.append(float(data[1]))
+		Temperature.append(float(data[2]))
+		KineticEnergy.append(float(data[3]))
+		PotentialEnergy.append(float(data[4]))
+		TotalEnergy.append(float(data[5]))
+		DiffusionConstant.append(float(data[6]))
 	infile.close()
 	Timestep = np.array(Timestep)
 	Time = np.array(Time)
@@ -37,7 +33,13 @@ def read(filename):
 
 Timestep, Time, Temperature, KineticEnergy, PotentialEnergy, TotalEnergy, DiffusionConstant = read('statistics.txt')
 
-print Timestep
 
 import matplotlib.pyplot as plt
+
+plt.plot(Temperature, DiffusionConstant)
+plt.rcParams.update({'font.size': 14})
+plt.ylabel('Diffusionconstant $[m^2/s]$')
+plt.xlabel('Temperature [K]')
+plt.show()
+
 
