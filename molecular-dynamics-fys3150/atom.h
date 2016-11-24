@@ -12,8 +12,8 @@ public:
     vec3 position;
     vec3 velocity;
     vec3 force;
-    vec3 initialPosition; //task 5f)
-    vec3 positionOnNeighborlistBuild;
+    vec3 initialPosition; //FFC
+    vec3 ListOfNeighborsVec;
     vector<Atom*> neighbors;
 
 

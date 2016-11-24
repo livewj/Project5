@@ -46,6 +46,7 @@ void StatisticsSampler::sample(System &system)
     sampleTemperature(system);
     sampleDensity(system);
     sampleDiffusionConstant(system);
+
     saveToFile(system);
 }
 
@@ -53,12 +54,11 @@ void StatisticsSampler::sampleKineticEnergy(System &system)
 {
     m_kineticEnergy = 0; // Remember to reset the value from the previous timestep
     double v2 = 0;       //velocity squared
-    double m = 0;        //mass
     for(Atom *atom : system.atoms()) {
         v2 += atom->velocity.lengthSquared();  //sum all the velocities
-        m += atom->mass();   //sum all the masses
     }
-    m_kineticEnergy = 0.5*m*v2;
+    Atom* a = system.atoms()[1]; //extracting the total mass
+    m_kineticEnergy = 0.5*a->mass()*v2;
 }
 
 void StatisticsSampler::samplePotentialEnergy(System &system)

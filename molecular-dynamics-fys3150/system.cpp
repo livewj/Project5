@@ -21,35 +21,36 @@ System::~System()
 void System::applyPeriodicBoundaryConditions() {
     for(Atom *atom : m_atoms) {
         if(atom->position.x() < 0){
-            atom->position.setX(atom->position.x() + m_systemSize.x());
-            atom->initialPosition.setX(atom->initialPosition.x() + m_systemSize.x()); //5f) updating so that r2 is the
-            //actual displacement as if no periodic boundary condition has occured.
-            atom->positionOnNeighborlistBuild.setX(atom->positionOnNeighborlistBuild.x() + m_systemSize.x());
+            atom->position.setX(atom->position.x() + m_systemSize.x()); //5a
+            atom->initialPosition.setX(atom->initialPosition.x() + m_systemSize.x()); //FCC
+            //5f) updating so that r2 is the
+            //actual displacement as if no periodic boundary condition has occured.WTF
+            //atom->positionOnNeighborlistBuild.setX(atom->positionOnNeighborlistBuild.x() + m_systemSize.x());
         }
         if(atom->position.y() < 0){
-            atom->position.setY(atom->position.y() + m_systemSize.y());
-            atom->initialPosition.setY(atom->initialPosition.y() + m_systemSize.y()); //5f)
-            atom->positionOnNeighborlistBuild.setY(atom->positionOnNeighborlistBuild.y() + m_systemSize.y());
+            atom->position.setY(atom->position.y() + m_systemSize.y());  //5a
+            atom->initialPosition.setY(atom->initialPosition.y() + m_systemSize.y()); //FCC
+            //atom->positionOnNeighborlistBuild.setY(atom->positionOnNeighborlistBuild.y() + m_systemSize.y());
         }
         if(atom->position.z() < 0){
-            atom->position.setZ(atom->position.z() + m_systemSize.z());
-            atom->initialPosition.setZ(atom->initialPosition.z() + m_systemSize.z()); //5f)
-            atom->positionOnNeighborlistBuild.setZ(atom->positionOnNeighborlistBuild.z() + m_systemSize.z());
+            atom->position.setZ(atom->position.z() + m_systemSize.z()); //5a
+            atom->initialPosition.setZ(atom->initialPosition.z() + m_systemSize.z()); //FCC
+            //atom->positionOnNeighborlistBuild.setZ(atom->positionOnNeighborlistBuild.z() + m_systemSize.z());
         }
         if(atom->position.x() > m_systemSize.x()){
-            atom->position.setX(atom->position.x() - m_systemSize.x());
-            atom->initialPosition.setX(atom->initialPosition.x() - m_systemSize.x()); //5f)
-            atom->positionOnNeighborlistBuild.setX(atom->positionOnNeighborlistBuild.x() - m_systemSize.x());
+            atom->position.setX(atom->position.x() - m_systemSize.x()); //5a
+            atom->initialPosition.setX(atom->initialPosition.x() - m_systemSize.x()); //FCC
+            //atom->positionOnNeighborlistBuild.setX(atom->positionOnNeighborlistBuild.x() - m_systemSize.x());
         }
         if(atom->position.y() > m_systemSize.y()){
-            atom->position.setY(atom->position.y() - m_systemSize.y());
-            atom->initialPosition.setY(atom->initialPosition.y() - m_systemSize.y()); //5f)
-            atom->positionOnNeighborlistBuild.setY(atom->positionOnNeighborlistBuild.y() - m_systemSize.y());
+            atom->position.setY(atom->position.y() - m_systemSize.y());  //5a
+            atom->initialPosition.setY(atom->initialPosition.y() - m_systemSize.y()); //FCC
+            //atom->positionOnNeighborlistBuild.setY(atom->positionOnNeighborlistBuild.y() - m_systemSize.y());
         }
         if(atom->position.z() > m_systemSize.z()){
-            atom->position.setZ(atom->position.z() - m_systemSize.z());
+            atom->position.setZ(atom->position.z() - m_systemSize.z());  //5a
             atom->initialPosition.setZ(atom->initialPosition.z() - m_systemSize.z()); //5f)
-            atom->positionOnNeighborlistBuild.setZ(atom->positionOnNeighborlistBuild.z() - m_systemSize.z());
+            //atom->positionOnNeighborlistBuild.setZ(atom->positionOnNeighborlistBuild.z() - m_systemSize.z());
         }
     }
 }

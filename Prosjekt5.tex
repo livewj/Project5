@@ -23,6 +23,7 @@
 \usepackage[utf8]{inputenc} %æ,ø,å
 \usepackage[english]{babel} % English language/hyphenation
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage{listings}
 
 \usepackage[tocflat]{tocstyle}
 \addto\captionsenglish{% Replace "english" with the language you use
@@ -91,8 +92,21 @@ HVA SKAL VI SE PÅ?
 
 
 
-\section{Teori}
-Gitteret vårt består at \textit{enhetsceller}, en gruppe med atomer. Større systemer vil altså bestå av flere enhetsceller etter hverandre. Argon har en kubisk flatesentrert gitterstruktur, også kalt FCC. Én slik FCC celle har størrelsen $b$ Ångstrøm, hvor $b$ er gitterkonstanten. Hver celle består av fire atomer med koordinatene
+\section{Implementasjon}
+
+\subsection{Gitterstruktur}
+Gitteret vårt består at \textit{enhetsceller}, en gruppe med atomer. Større systemer vil altså bestå av flere enhetsceller etter hverandre. Argon har en kubisk flatesentrert gitterstruktur, også kalt FCC, se figur \ref{fcc}. 
+
+\FloatBarrier
+\begin{figure}[!ht]
+ \centering
+ \includegraphics[scale=0.3]{fcc.png}
+ \caption{To mulige fremstillinger av gitterstrukturen FCC.}
+ \label{fcc}
+ \end{figure}
+ \FloatBarrier
+
+Én slik FCC celle har størrelsen $b$ Ångstrøm, hvor $b$ er gitterkonstanten. Vi bruker $b$ = 5.26 Ångstrøm, som er den vanlige cellestørrelsen i Argon krystallen. Hver celle består av fire atomer med koordinatene
 \begin{equation}
 \textbf{r}_1 = 0 \hat{i} + 0 \hat{j} + 0 \hat{k}
 \end{equation}
@@ -116,7 +130,46 @@ hvor $i=0,1,..., N_x-1, j=0,1,..., N_y-1$, og $k=0,1,..., N_z-1$. Enhetsvektoren
 	\hat{\mathbf{u}}_1 = b\hat{\mathbf{i}}, \quad \hat{\mathbf{u}}_2 = b\hat{\mathbf{j}}, \quad \hat{\mathbf{u}}_3 = b\hat{\mathbf{k}}.
 \end{align}
 
-Videre kommer vi til å bruke Lennard-Jones potensialet til å beregne energien mellom to atomer $i$ og $j$
+Siden gitterkonstanten $b$ = 5.26 Ångstrøm, og vi har fire atomer per celle, ender vi opp med en tetthet på $\rho = m/V = 4m_{Ar}/b^3 = 1822,8 kg/m^3$.
+
+
+
+
+\subsection{Periodiske grensebetingelser}
+Vi bruker såkalte \textbf{periodiske grensebetingelser} når vi simulerer systemet vårt. Når vi simulerer fysiske systemer på datamaskinen, vil disse være begrenset av maskinens kapasitet. Typiske MD simuleringer inneholder ofte flere millioner atomer på et område mindre enn én kubikkmikrometer. Vi kan komme unna det som skjer i enden av denne kuben ved å bruke periodiske grensebetingelser. På denne måten kan vi simulere store (uendelige) systemer ved en enkelt celle. Når et atom beveger seg forbi veggen på den ene siden, vil den dukke opp igjen på motsatt vegg med samme hastighet, se figur \ref{per}. Store systemer består at et uendelig antall slike enhetsceller, hvor én av disse er vår originale simulering, mens resten er kopier, eller \textit{bilder}, av denne. I tre dimensjoner vil vi altså ha én original celle, med 26 naboer, som er kopier av denne. Vi trenger derfor kun å simulere hva som skjer i den originale enhetscellen, og dette sparer oss enormt med beregningstid -og krefter. Dette kan gjøres ved den enkle algoritmen
+
+\begin{lstlisting}
+if (periodic_x) then
+  if (x <  -x_size * 0.5) x = x + x_size
+  if (x >=  x_size * 0.5) x = x - x_size
+end if
+\end{lstlisting}
+
+hvor \texttt{x$\_$size} er lengden på boksen i én retning, og \texttt{x} er posisjonen til atomet i denne retningen. I tillegg må avstanden mellom atomene følge \textit{minimum image} kriteriet
+
+\begin{lstlisting}
+if (periodic_x) then
+  dx = x(j) - x(i)
+  if (dx <= -x_size * 0.5) dx = dx + x_size
+  if (dx >  x_size * 0.5) dx = dx - x_size
+endif
+\end{lstlisting}
+
+hvor \texttt{dx} er avstanden mellom atom $i$ og $j$. Vi vet at i tre dimensjoner så vil hvert atom eksistere 27 ganger, en gang i originalcellen og 26 ganger i nabocellene. Når vi beregner kraften som virker mellom atom $i$ og $j$, velger vi altså den kopien av atom $j$ som ligger \textit{nærmest} atom $i$.  Siden vi jobber i tre dimensjoner, må vi gjøre samme prosedyre i y -og z-retning. De eneste kreftene som virker i systemet vårt er indre krefter, slik at den totale energien er konstant. De periodiske grensebetingelsene fører til at systemet ikke kan utveksle atomer med miljøet rundt, som betyr at vi kan kalle dette for et \textit{mikrokanonisk ensemble}. 
+
+
+\FloatBarrier
+\begin{figure}[!ht]
+ \centering
+ \includegraphics[scale=0.3]{periodic.png}
+ \caption{Periodiske grensebetingelser i 2D. Her har vi én original enhetscelle, og åtte kopier av denne.}
+ \label{per}
+ \end{figure}
+ \FloatBarrier
+ 
+ 
+\subsection{Lennard-Jones potensialet}
+Vi kommer til å bruke Lennard-Jones potensialet til å beregne energien mellom to atomer $i$ og $j$
 
 \begin{equation}
 U(r_{ij}) = 4\epsilon\left[\left(\frac{\sigma}{r_{ij}}\right)^{12} - \left(\frac{\sigma}{r_{ij}}\right)^6\right],
@@ -133,7 +186,7 @@ I dette prosjektet brukes såkalte MD enheter. Definisjonen av disse finnes i Ap
 V = \sum_{i>j} U(r_{ij})
 \end{equation}
 
-Kraftens  finner vi ved
+Kraften finner vi ved
 \begin{equation}
 \textbf{F}(r_{ij}) = - \nabla U(r_{ij}).
 \end{equation}
@@ -158,14 +211,30 @@ slik at
 F_x (r_{ij}) = - 4 \epsilon \left[ -12 \left( \frac{\sigma^{12}}{r_{ij}^{13}} \right) + 6 \left( \frac{\sigma^6}{r_{ij}^7} \right) \right] \cdot \frac{x_{ij}}{r_{ij}}.
 \end{equation}
 
+Tilsvarende kan gjøres for $F_y(r_{ij})$ og $F_z(r_{ij})$. Når vi implementerer dette i koden vår, bruker vi \textbf{Velocity Verlet} metoden som integrator. Vi finner altså atomenes hastighet og posisjon ved å bruke at 
 
-Tilsvarende kan gjøres for $F_y(r_{ij})$ og $F_z(r_{ij})$. Systemets kinetiske energi er 
+\[ \vec{v}(t + dt/2) = \vec{v}(t) + \frac{\vec{F}(t)}{m}\frac{dt}{2} \]
+\[\vec{r}(t + dt) = \vec{r}(t) + \vec{v}(t + dt/2)dt \]
+\[\vec{v}(t + dt) = \vec{v}(t + dt/2) + \frac{\vec{F}(t + dt)}{m} \frac{dt}{2} \]
 
+hvor $dt$ er tidssteget vårt.
+
+
+\subsection{Kinetisk energi, temperatur og diffusjonskonstanten}
+Vi har også beregnet flere ulike fysiske størrelser som kinetisk energi, total energi, temperatur og diffusjonskonstant for å kunne se hvordan systemet utvikler seg ved ulike initialtemperaturer. 
+
+Systemets kinetiske energi er 
 \begin{equation}
 E_k = \sum_{i=1}^{N_{atomer}} \frac{1}{2}m_iv_i^2
 \end{equation}
-hvor $m_i$ og $v_i$ er massen og hastigheten til atom nummer $i$. Vi kan også kalkulere et estimat for temperaturen ved hjelp av ekvipartisjonsteoremet 
+hvor $m_i$ og $v_i$ er massen og hastigheten til atom nummer $i$. Den potensielle energien er gitt i ligning (2.9), og vi finner den totale energien ved å addere den kinetiske og den potensielle energien. 
 
+\begin{equation}
+E_{tot} = \sum_{i=1}^N_{atomer} E_k + V
+\end{equation}
+Vi vet at denne summen må være konstant, siden vi jobber med et mikrokanonisk system. I tillegg skal den totale bevegelsesmengden i systemet være null. Dette er derfor en god måte å teste om programmet virker som det skal.
+
+Vi kan kalkulere et estimat for temperaturen ved hjelp av ekvipartisjonsteoremet 
 \begin{equation}
 \langle E_k \rangle = \frac{3}{2}N_{atomer} k_B T
 \end{equation}
@@ -186,7 +255,11 @@ hvor $D$ er diffusjonskonstanten, $t$ er tiden og
 \begin{equation}
 r_i^2 (t) = | \textbf{r}_i (t) - \textbf{r}_i (0) |^2
 \end{equation} 
-hvor $\textbf{r}_i (t)$ er posisjonen til atom $i$ ved tiden $t$.
+hvor $\textbf{r}_i (t)$ er posisjonen til atom $i$ ved tiden $t$. Ved å øke temperaturen, vil systemet bli mer og mer kaotisk. Ved en viss temperatur vil vi miste krystallstrukturen, vi kaller dette for systemets smeltepunkt. Diffusjonskonstanten $D$ gir oss en estimat på temperaturen ved smeltepunktet. Vi vet at $D$ vil være omtrent null når systemet er i fast form, mens den vil øke kraftig ved smeltepunktet. 
+
+\\
+
+
 
 \subsection{Kodens struktur}
 Koden som er brukt i dette prosjektet er objekt orientert, og bygger på koden skrevet av Anders Hafreager [6]. Figur \ref{flow} viser kodens flytskjema. Koden består av en rekke nøstede funksjoner som avhenger av hverandre. Aller først starter vi med å initialisere systemet vårt, ved å bestemme antall celler i gitteret, den initielle temperaturen og gitterkonstanten, som bestemmer systemets tetthet. Deretter konverteres enhetene i klassen \texttt{unitconverter.cpp}, slik at ulike fysiske størrelser som masse, lengde og energi har en enhet som er tilpasset systemet vi jobber med. Deretter setter vi opp selve gitteret ved å plassere partiklene i en tredimensjonal kubisk flatesentrert gitterstruktur, akkurat som i argons krystallstruktur. Det betyr at vi har ett atom i hvert hjørne, og ett atom på hver flate. Hvert atom får en tilfeldig initialhastiget bestemt av Boltzmanns fordelingslov som funksjon av initialtemperaturen, slik at 
@@ -195,11 +268,11 @@ Koden som er brukt i dette prosjektet er objekt orientert, og bygger på koden s
 P(v_i)dv_i = \left(\frac{m}{2\pi k_B T} \right)^{1/2} exp \left(- \frac{mv_i^2}{2k_B T} \right)dv_i
 \end{equation}
 
-hvor $m$ er atomets masse, $k_B$ er Boltzmanns konstant og $T$ er temperaturen. Dette er en normalfordeling med null i gjennomsnitt og standardavvik $\sigma = \sqrt{k_B T/m}$. I tillegg fjerner vi den totale initielle bevegelsesmengden ved å trekke fra den gjennomsnittlige initielle bevegelsesmengden per atom fra hvert av atomene. Videre bestemmes hvilken integrator som skal brukes; i vårt tilfelle er det \texttt{velocityverlet.cpp}. Vi er nå klare til å starte selve simuleringen. \\
+hvor $m$ er atomets masse, $k_B$ er Boltzmanns konstant og $T$ er temperaturen. Dette er en normalfordeling med null i gjennomsnitt og standardavvik $\sigma = \sqrt{k_B T/m}$. I tillegg fjerner vi den totale initielle bevegelsesmengden ved å trekke fra den gjennomsnittlige initielle bevegelsesmengden per atom fra hvert av atomene. Dette fører til at systemets totale bevegelsesmengde blir null.
+
+Videre bestemmes hvilken integrator som skal brukes; i vårt tilfelle er det \texttt{velocityverlet.cpp}. Vi er nå klare til å starte selve simuleringen. \\
 
 Vi starter med funksjonen \texttt{step} som finnes i klassen \texttt{system.cpp}. Denne funksjonen starer ned å kalle på den integratoren vi har valgt. Inne i integratoren kalles det på funskjonen \texttt{calculateForces()} som finnes i \texttt{system.cpp}. Vi bruker \texttt{LennardJones} potensialet, som regner ut den potensielle kraften som funksjon av avstanden melom atom $i$ og $j$, $r_{ij}$. Integratoren beregner atomenes nye hastighet og posisjon, basert på forrige tidssteg. For å kunne beregne kreftene er det brukt periodiske grensebetingelser. Etter dette går vi til neste tidssteg, og vi gjentar \texttt{step} funksjonen ved å loope gjennom tidsstegene. Etter hver loop registreres ulike termodynamiske størrelser som temperatur, kinetisk og potensiell energi. Posisjonen til partiklene lagres i en fil og visualiseres i Ovito. 
-
-
 
 \FloatBarrier
 \begin{figure}[!ht]
@@ -212,19 +285,27 @@ Vi starter med funksjonen \texttt{step} som finnes i klassen \texttt{system.cpp}
 
 
 \section{Resultater}
+Figur \ref{fcuk} og \ref{fcuk2} viser oss fordelignen av atomer før og etter vi implementerte gitterstrukturen FCC. Figurene viser fordelingen ved starten av simuleringen, før kreftene har begynt å virke. 
+
+ \FloatBarrier
+\begin{figure}[!htb]
+\minipage{0.4\textwidth}
+  \includegraphics[width=\linewidth]{5cnoFCC.png}
+  \caption{Tilfeldig plassering av atomer.}\label{fcuk}
+\endminipage\hfill
+\minipage{0.4\textwidth}
+  \includegraphics[width=\linewidth]{5cFCC.png}
+  \caption{Atomer plassert i FCC gitterstruktur.}\label{fcuk2}
+\endminipage\hfill
+\end{figure}
+ \FloatBarrier
+
 
 \section{Diskusjon}
+tetthet på $\rho = m/V = 4m_{Ar}/b^3 = 1822,8 kg/m^3$. Dette er en ekstremt høy tetthet i flytende tilstand. Vi vet at den kritiske tettheten er på 536 $kg/m^3$ ????? FRA HVOR.
+
 \section{Konklusjon}
 
-
-\begin{align} 
-\begin{split}
-(x+y)^3 	&= (x+y)^2(x+y)\\
-&=(x^2+2xy+y^2)(x+y)\\
-&=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
-&=x^3+3x^2y+3xy^2+y^3
-\end{split}					
-\end{align}
 
 
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule

@@ -14,8 +14,8 @@ using namespace std;
 int main(int numberOfArguments, char **argumentList)
 {
     int numberOfUnitCells = 5; //number of unit cells in each dimension
-    double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
-    double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
+    double initialTemperature = UnitConverter::temperatureFromSI(400.0); // measured in Kelvin
+    double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // b, measured in Angstroms
 
     // If a first argument is provided, it is the number of unit cells
     if(numberOfArguments > 1) numberOfUnitCells = atoi(argumentList[1]);
@@ -34,8 +34,8 @@ int main(int numberOfArguments, char **argumentList)
 
     System system;
     system.createFCCLattice(numberOfUnitCells, latticeConstant, initialTemperature);
-    system.potential().setEpsilon(1.0);
-    system.potential().setSigma(1.0);
+    system.potential().setEpsilon(119.8); //[K] Optimal for Argon
+    system.potential().setSigma(3.405); //Angstrom
 
     system.removeTotalMomentum();
 
@@ -54,7 +54,7 @@ int main(int numberOfArguments, char **argumentList)
 
     for(int timestep=0; timestep<1000; timestep++) {
         system.step(dt);
-        statisticsSampler.sample(system);  //sample to file
+        statisticsSampler.sample(system);  //sample to file statistics.txt
         if( timestep % 100 == 0 ) {
             // Print the timestep every 100 timesteps
             cout << setw(20) << system.steps() <<
