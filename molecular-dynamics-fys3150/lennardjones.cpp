@@ -1,6 +1,7 @@
 #include "lennardjones.h"
 #include "system.h"
 #include <math.h>
+using namespace std;
 
 double LennardJones::potentialEnergy() const
 {
@@ -79,6 +80,7 @@ void LennardJones::calculateForces(System &system)
             atomj->force[2] -= F*deltaz2z1;
 
             m_potentialEnergy += 4*m_epsilon*(sigma6*sigma6/(dr6*dr6) - sigma6/dr6);
+
         }
     }
 }

@@ -36,7 +36,7 @@ Timestep, Time, Temperature, KineticEnergy, PotentialEnergy, TotalEnergy, Diffus
 
 import matplotlib.pyplot as plt
 
-plt.plot(Temperature, DiffusionConstant)
+plt.plot(Temperature[200:], DiffusionConstant[200:])
 plt.rcParams.update({'font.size': 14})
 plt.ylabel('Diffusionconstant $[m^2/s]$')
 plt.xlabel('Temperature [K]')

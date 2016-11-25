@@ -76,8 +76,7 @@
 
 \maketitle 
 \begin{abstract}
-Målet med dette prosjektet er å implementere en algoritme som simulerer molekylærdynamikk slik at vi kan studere de ulike termodynamiske egenskapene til grunnstoffet argon. Argon er en edelgass og vil derfor ikke danne kovalente bindinger mellom atomene, slik at simuleringen blir enklere å gjennomføre. Systemet vårt er ordnet i et gitter bestående av kubisk flatesentrerte gitterstrukturer, da dette er den geometriske strukturen argon har som fast stoff. Vi har sett på systemer med $10^2$ til $10^6$ atomer, og simulert systemets tidsutvikling ved ulike temperaturer og tettheter. I tillegg har vi sett på ulike termodynamiske størrelser som energi og bevegelsesmengde. Til slutt bli Berendsen termodstaten innført.
-KVANTITATIVT
+Målet med dette prosjektet er å implementere en algoritme som bruker molekylærdynamikk slik at vi kan studere ulike termodynamiske egenskaper til grunnstoffet argon.  Atomene i systemet vårt er ordnet i en kubisk flatesentrerte gitterstruktur, som er den strukturen argon har som fast stoff. Vi har sett på et system med 500 atomer, og simulert systemets tidsutvikling ved ulike initialtemperaturer. I tillegg har vi sett på ulike termodynamiske størrelser som potensiell og kinetisk energi, temperaturutvikling og diffusjonskonstant. Ved å plotte diffusjonskonstanten som funksjon av temperatur, fant vi ut at systemets smeltevarme lå på DKFJSKJFH Kelvin.
 
 \end{abstract}
 
@@ -87,9 +86,8 @@ KVANTITATIVT
 \section{Introduksjon}
 Molekylærdynamikk, eller MD, er en numerisk metode som brukes for å kunne beregne ulike fysiske størrelser. Dette gjøres gjerne gjennom datasimulasjon av bevegelsen til atomer. Det finnes flere ulike MD algoritmer, den enkleste av dem bruker Newtonsk fysikk og ser på atomene som punktpartikler. MD er en svært nyttig metode som brukes innen nesten alle vitenskapelige fagfelt, fra biokjemi og materialteknologi til nanoteknologi og biofysikk. Slike simuleringer brukes blant annet til å studere oppførselen til systemer som ikke kan observeres direkte gjennom eksperimenter, som for eksempel vekst av tynnfilmer. Innenfor biofysikken bruker man ofte MD til å raffinere tredimensjonale proteinstrukturer og andre makromolekyler ut ifra eksperimentelle data hentet fra NMR spektroskopi. MD kan også brukes til å undersøke fysiske egenskaper i nanoteknologiske apparater som ennå ikke har blitt produsert. 
 \\
-HVA SKAL VI SE PÅ?
 
-
+I denne oppgaven skal vi se nærmere på grunnstoffet argon. Vi skal gradvis bygge opp en kode som til slutt gjør oss i stand til å simulere ulike egenskaper ved argon ved bruk av molekylærdynamikk. Vi starter med å se på argons gitterstruktur og hvordan denne kan implementeres i koden vår. Dette gjør slik at atomene i systemet vårt plasseres ordnet, og ikke tilfeldig inne i enhetscellen. Videre innfører vi periodiske grensebetingelser, som fører til at vi får et lukket system hvor den totale energien er konstant. Vi skal bruke Lennard-Jones potensialet til å beregne kraften som virker mellom atomene. I tillegg skal vi se nærmere på andre fysiske størrelser som kinetisk og potensiell energi, temperatur og diffusjonskonstant. Systemet vårt består av 500 atomer, og vi skal bruke programmet Ovito til å se på hvordan disse vil oppføre seg som funksjon av tid ved ulike initialtemperaturer. Dette kan brukes som et røft estimat til å finne systemets smeltepunkt. Et mer nøyaktig estimat finner vi ved å se på diffusjonskonstanten som funksjon av temperatur.
 
 
 \section{Teori og implementasjon}
@@ -175,7 +173,21 @@ Vi kommer til å bruke Lennard-Jones potensialet til å beregne energien mellom 
 U(r_{ij}) = 4\epsilon\left[\left(\frac{\sigma}{r_{ij}}\right)^{12} - \left(\frac{\sigma}{r_{ij}}\right)^6\right],
 \end{equation}
 
-hvor $r_{ij} = \vert\mathbf{r}_i - \mathbf{r}_j\vert$  er avstanden mellom atom $i$ og atom $j$, $\epsilon$ er dybden på potensialbrønnen (med enhet energi) og $\sigma$ er avstanden når potensialet er null. Siden vi jobber med argon, bruker vi 
+hvor $r_{ij} = \vert\mathbf{r}_i - \mathbf{r}_j\vert$  er avstanden mellom atom $i$ og atom $j$, $\epsilon$ er dybden på potensialbrønnen (med enhet energi) og $\sigma$ er avstanden når potensialet er null.\\
+
+Lennard-Jones potensialet er vanlig å bruke når vi skal beskrive kreftene som virker mellom to nøytrale atomer eller molekyler. Argon er en edelgass og vil derfor ikke danne kovalente bindinger mellom atomene. I ligning (2.7) ser vi et ledd $r^{-12}$. Dette leddet beskriver de frastøtende kreftene, som kommer av at atomene frastøter hverandre når avstanden mellom dem er liten, siden deres elektronbaner vil overlappe. Dette kalles den steriske effekten, som fører til at energien øker brått når avstanden blir mindre. Dette illustreres i figur \ref{LJ}. Leddet $r^{-6}$ beskriver den tiltrekkende kraften, som virker ved lengre avstander. Her virker van der Waals krefter, som er en relativt svak kraft, i forholdt til kovalente bindinger.
+
+\FloatBarrier
+\begin{figure}[!ht]
+ \centering
+ \includegraphics[scale=0.4]{LJ.png}
+ \caption{Graf som viser styrken på potensialet som funksjon av avstand mellom atomene. $r_m$ er avstanden når potensialet har verdien $-\epsilon$.}
+ \label{LJ}
+ \end{figure}
+ \FloatBarrier
+
+
+Siden vi jobber med argon, bruker vi 
 
 \begin{equation}
 	\frac{\epsilon}{k_B} = 119.8\mathrm{K}, \quad \sigma=3.405 \mathrm{Angstrom}.
@@ -327,14 +339,47 @@ Figur \ref{50}, \ref{250}, \ref{450} og \ref{700} viser hvordan systemet utvikle
 \end{figure}
  \FloatBarrier
 
+I figur \ref{TEMP} og \ref{Energy} ser vi hvordan temperaturen og energien utvikler seg som funksjon av antall tidssteg. 
+
+ \FloatBarrier
+\begin{figure}[!htb]
+\centering
+\minipage{0.5\textwidth}
+  \includegraphics[width=\linewidth]{TvsStep.png}
+  \caption{Temperatur som funksjon av antall tidssteg. Her er ett tidssteg det samme som $10^{-15}$ sekunder. }\label{TEMP}
+\endminipage\hfill
+\minipage{0.5\textwidth}
+  \includegraphics[width=\linewidth]{EvsStep.png}
+  \caption{Potensiell, kinetisk og total energi som funksjon av antall tidssteg.}\label{Energy}
+\endminipage\hfill
+\end{figure}
+ \FloatBarrier
+ 
+I figuren under ser vi $T/T_{init}$ som funksjon av $T_{init}$, hvor $T$ er temperaturen til systemet etter det har nådd termisk likevekt, og $T_{init}$ er initialtemperaturen som systemet starter med.
+
+\FloatBarrier
+\begin{figure}[!ht]
+ \centering
+ \includegraphics[scale=0.5]{T_ratio.png}
+ \caption{Forholdet mellom temperatur og initialtemperatur som funksjon av initialtemperatur holder seg tilnærmet konstant.}
+ \label{Trat}
+ \end{figure}
+ \FloatBarrier
 
 \section{Diskusjon}
-tetthet på $\rho = m/V = 4m_{Ar}/b^3 = 1822,8 kg/m^3$. Dette er en ekstremt høy tetthet i flytende tilstand. Vi vet at den kritiske tettheten er på 536 $kg/m^3$ ????? FRA HVOR.
+I figurene \ref{50}, \ref{250}, \ref{450} og \ref{700} ser vi hvordan systemet utvikler seg ved ulike initialtemperaturer. Som forventet, ser vi at  systemet blir mer kaotisk ved høyere initialtemperaturer. Ved såpass høye temperaturer (eks 700 Kelvin) vil ikke atomene være bundet til sin faste plass i krystallstrukturen, og systemet vårt blir flytende. Vi ser at ved en initialtemperatur på 50 K har vi fortsatt beholdt krystallstrukturen. Allerede ved en initialtemperatur på 250 K begynner det å bli vanskelig å se krystallstrukturen tydelig. Det ville være vanskelig å bestemme ved hvilken temperatur systemet vårt går over til å bli væske bare ved å se på disse bildene. Vi bruker derfor diffusjonskonstanten $D$ til å få et bedre estimat av smeltepunktet til systemet. \\
 
-I figurene \ref{50}, \ref{250}, \ref{450} og \ref{700} ser vi hvordan systemet utvikler seg ved ulike initialtemperaturer. Som forventet, ser vi at  systemet blir mer kaotisk ved høyere initialtemperaturer. Ved såpass høye temperaturer (eks 700 Kelvin) vil ikke atomene være bundet til sin faste plass i krystallstrukturen, og systemet vårt blir flytende. Vi ser at ved en initialtemperatur på 50 K har vi fortsatt beholdt krystallstrukturen. Allerede ved en initialtemperatur på 250 K begynner det å bli vanskelig å se krystallstrukturen tydelig. Det ville være vanskelig å bestemme ved hvilken temperatur systemet vårt går over til å bli væske bare ved å se på disse bildene. Vi bruker derfor diffusjonskonstanten $D$ til å få et bedre estimat av smeltepunktet til systemet. 
+Temperaturutviklingen til systemet vises i figur \ref{TEMP}. Vi ser at systemet starter med en initialtemperatur på 300 K.  Graften starter med å synke brått i løpet av de første hundre tidsstegene. Vi vet at temperaturen er linket til atomenes kinetiske energi. Jo høyere kinetisk energi atomene har, jo høyere blir temperaturen. Vi ser i figur \ref{Energy} at også den kinetiske energien dropper i starten av simuleringen. Etter at temperaturen har droppet, stabiliserer temperaturen seg på omtrent halvparten av verdien til  initialtemperaturen. Det at temperaturen har stabilisert seg tyder på at systemet har nådd likevekt.\\
+
+I figur \ref{Energy} ser vi kinetisk, potensiell og total energi i samme plott. Når vi så på verdien til totalenergien, oppdaget vi en liten fluktuasjon i det andre desimaltegnet. Dette kommer av avrundingsfeil og feil i Velocity Verlet integratoren. Vi kan derfor se bort fra disse fluktuasjonene. Den totale energien holder seg altså konstant, som forventet. Dette viser at koden vi har skrevet fungerer i henhold til de fysiske lovene. Den kinetiske energien faller også brått i starten, i likhet med temperaturen. Samtidig som den kinetiske energien faller, øker den potensielle energien. Det kommer av energibevaringen, da den totale energien må forbli konstant. Den hurtige økningen i potensiell energi kommer av at systemet mister sin krystallstruktur, hvor den potensielle energien er lavest. \\
+
+Ved å simulere tidsutviklingen til systemet ved ulike initialtemperaturer $T_{init}$, kunne vi finne temperaturen $T$ ved termisk likevekt. I \ref{Trat} er forholdet $T/T_{init}$ plottet mot $T_{init}$. Dette folholdet holder seg nesten konstant ved 0.7. Dette viser at temperaturen ved likevekt er omtrent 70$\%$ av initialtemperaturen. For at systemet skal oppnå en endelig temperatur ved likevekt, spiller det altså ingen rolle hvilken initialtemperatur vi bruker, siden dette forholdet er konstant.\\
+
+
+
 
 \section{Konklusjon}
-I løpet av dette prosjektet har vi klart å implementere et program som bruker molekylærdynamikk til å simulere grunnstoffet Argon. Vi har sett på hvordan dette systemet oppfører seg ved ulike initialbetingelser. Ved å beregne ulike størrelser som potensiell energi, kinetisk energi, temperatur og diffusjonskonstant, kan vi se på hvordan disse vil utvikle seg som funksjon av tid. Vi har begrenset oss til gittere med størrelsen 5$\times$5$\times$5, da simulering med større gittere krevde for mye CPU tid.
+I løpet av dette prosjektet har vi klart å implementere et program som bruker molekylærdynamikk til å simulere grunnstoffet Argon. Vi har sett på hvordan dette systemet oppfører seg ved ulike initialbetingelser. Ved å beregne ulike størrelser som potensiell energi, kinetisk energi, temperatur og diffusjonskonstant, kan vi se på hvordan disse vil utvikle seg som funksjon av tid. Vi har sett på gittere med størrelsen 5$\times$5$\times$5, og sett at koden fungerer ved hjelp av enkle tester som at den totale energien skal være bevart, og dermed konstant. 
 
 
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
@@ -389,11 +434,14 @@ Setter vi inn de oppgitte verdiene for lengde, masse og energi, får vi at
  Opprinnelig kode, A. Hafreager: <https://github.com/andeplane/molecular-dynamics-fys3150>, 19.11.16
   
 \bibitem{}
-  Deler av koden i \texttt{system.cpp} er hentet fra: <https://github.com/GioPede/FYS3150/tree/master/Project5>,
+  Deler av koden er hentet fra: <https://github.com/GioPede/FYS3150/tree/master/Project5>,
   20.11.16
   
  \bibitem{}
  Periodic boundary conditions: <https://en.wikipedia.org/wiki/Periodic$\_$boundary$\_$conditions>, 20.11.16
+ 
+ \bibitem{}
+ van der Waals force: <https://en.wikipedia.org/wiki/Van$\_$der$\_$Waals$\_$force>
 
    
 \end{thebibliography}

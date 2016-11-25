@@ -653,7 +653,8 @@ statisticssampler.o: ../molecular-dynamics-fys3150/statisticssampler.cpp ../mole
 		../molecular-dynamics-fys3150/math/vec3.h \
 		../molecular-dynamics-fys3150/velocityverlet.h \
 		../molecular-dynamics-fys3150/lennardjones.h \
-		../molecular-dynamics-fys3150/statisticssampler.h
+		../molecular-dynamics-fys3150/statisticssampler.h \
+		../molecular-dynamics-fys3150/unitconverter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o statisticssampler.o ../molecular-dynamics-fys3150/statisticssampler.cpp
 
 unitconverter.o: ../molecular-dynamics-fys3150/unitconverter.cpp ../molecular-dynamics-fys3150/unitconverter.h \
