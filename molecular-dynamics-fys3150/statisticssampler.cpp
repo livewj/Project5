@@ -27,12 +27,13 @@ void StatisticsSampler::saveToFile(System &system, string filename)
 
     // Write to file for each timestep here
         m_file << setprecision(15) <<  system.steps() << "      "
-               << setprecision(15) << system.time() << "      "
+               << setprecision(15) << UnitConverter::timeToSI( system.time() ) << "      "
                << setprecision(15) << UnitConverter::temperatureToSI( temperature()) << "      "
                << setprecision(15) << kineticEnergy() << "      "
                << setprecision(15) << potentialEnergy() << "      "
                << setprecision(15) << totalEnergy() << "       "
-               << setprecision(15) << UnitConverter::diffusionToSI( diffusionconstant() )<< endl;
+               << setprecision(15) << UnitConverter::lengthToSI( diffusionconstant() ) << endl; //writing the mean square displacement to file
+               //<< setprecision(15) << UnitConverter::diffusionToSI( diffusionconstant() )<< endl;
 }
 
 void StatisticsSampler::sample(System &system)
@@ -76,14 +77,16 @@ void StatisticsSampler::sampleDensity(System &system)
 
 void StatisticsSampler::sampleDiffusionConstant(System &system)
 {
-    double r2 = 0.0;
     m_DiffusionConstant = 0;
+    double r2 = 0.0;
     //calculate the mean square displacement
     for (Atom *atom : system.atoms()){
         r2 += (atom->position.x() - atom->initialPosition.x())*(atom->position.x() - atom->initialPosition.x())
                 + (atom->position.y() - atom->initialPosition.y())*(atom->position.y() - atom->initialPosition.y())
                 + (atom->position.z() - atom->initialPosition.z())*(atom->position.z() - atom->initialPosition.z());
     }
+
+   // m_DiffusionConstant = r2; //return the mean square displacement to get stigningstall    //
     m_DiffusionConstant = r2/(6.0*system.atoms().size()*system.time());
 }
 

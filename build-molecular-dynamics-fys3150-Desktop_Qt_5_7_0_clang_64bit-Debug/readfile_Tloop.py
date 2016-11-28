@@ -33,32 +33,11 @@ T_ratio = np.array([0.669704,0.741992,0.678682,0.690175,0.693458,0.719683,0.7590
 
 T = T_ratio*T_init #temperature at equilibrium
 
-D_mean = [3.08224e-12
-,1.67068e-10
-,3.05171e-10
-,4.52251e-10
-,6.13243e-10
-,7.64216e-10
-,1.04179e-09
-,1.22794e-09
-,1.25638e-09
-,1.71514e-09
-,1.81977e-09
-,1.96159e-09
-,2.13156e-09
-,2.44635e-09
-,2.81205e-09
-,3.05605e-09
-,3.54855e-09
-,3.59755e-09
-,3.56333e-09
-,4.87054e-09]
-
 import matplotlib.pyplot as plt
 
-plt.plot(T, D_mean, 'go')
+plt.plot(T, T_ratio, 'go')
 plt.rcParams.update({'font.size': 14})
-plt.ylabel('$D [m^2/s]$')
+plt.ylabel('$T/T_i [m^2/s]$')
 plt.xlabel('$T$ [K]')
 plt.show()
 

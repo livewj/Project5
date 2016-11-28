@@ -8,6 +8,7 @@
 #include "unitconverter.h"
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 
 using namespace std;
 
@@ -53,12 +54,9 @@ int main(int numberOfArguments, char **argumentList)
             setw(20) << "TotalEnergy" <<
             setw(20) << "DiffusionConstant" << endl;
 
-
-
-    for(int timestep=0; timestep<1000; timestep++) {
+    for(int timestep = 0; timestep < 1000; timestep ++) {
         system.step(dt);
         statisticsSampler.sample(system);  //sample to file statistics.txt
-
         if( timestep % 100 == 0 ) {
             // Print the timestep every 100 timesteps
             cout << setw(20) << system.steps() <<
@@ -90,8 +88,8 @@ int main(int numberOfArguments, char **argumentList)
 
 
     //LOOP OVER INITIAL TEMPS
-    double start_init = UnitConverter::temperatureFromSI( 1 ); //measured in Kelvin
-    double max_init = UnitConverter::temperatureFromSI( 1000 );
+    double start_init = UnitConverter::temperatureFromSI( 1700 ); //measured in Kelvin
+    double max_init = UnitConverter::temperatureFromSI( 25000 );
 
     for (double initialTemperature = start_init; initialTemperature < max_init; initialTemperature += UnitConverter::temperatureFromSI( 50 )) {
         System system;
@@ -105,20 +103,19 @@ int main(int numberOfArguments, char **argumentList)
 
         double T_sum = 0.0;
         double T_mean;
-        double D_sum = 0.0;
-        double D_mean;
-        double numberOfTimesteps = 1000.0;
+        double D = 0;
+        double N = 3000.0;
 
-        for(double timestep=0.0; timestep<numberOfTimesteps; timestep ++ ) {
+        for(int timestep=0.0; timestep < N; timestep ++ ) {
             system.step(dt);
             statisticsSampler.sample(system);  //sample to file statistics.txt
-            D_sum += statisticsSampler.diffusionconstant();
-
+            D += statisticsSampler.diffusionconstant();
+            if (timestep > 300) {  //temperature stabilized after 250 timesteps
+                T_sum += statisticsSampler.temperature();
+            }
         }
-        //T_mean = T_sum/700.0; //Final temperature after reached equilibrium
-        D_mean = D_sum/numberOfTimesteps;
-        //cout << UnitConverter::temperatureToSI( T_mean) << endl;
-        cout << UnitConverter::diffusionToSI( D_mean ) << endl;
+        T_mean = T_sum/2700.0; //Final temperature after reached equilibrium
+        cout << UnitConverter::temperatureToSI( T_mean) << "   "<< UnitConverter::diffusionToSI( D/N ) << endl;
 
     }
     return 0;
